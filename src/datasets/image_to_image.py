@@ -30,7 +30,7 @@ class ImageToImageBase(Dataset, ABC):
     
     @abstractmethod
     def load_from_files(self, input_file: Path, output_file: Path, meta_file: Optional[Path]) -> dict[str, Any]:
-        pass
+        pass  # TODO: Return a dictionary ie. {"input": image_tensor, "output": image_tensor,... }
     
     def __getitem__(self, idx):
         input_file = self.input_files[idx]
@@ -38,5 +38,9 @@ class ImageToImageBase(Dataset, ABC):
         meta_file = None
         if self.meta_files is not None:
             meta_file = self.meta_files[idx]
-        return self.load_from_files(input_file, output_file, meta_file)  # TODO
-        
+        return self.load_from_files(input_file, output_file, meta_file)  
+    
+
+if __name__ == "__main__":
+    ds = ImageToImageBase()
+    
