@@ -120,6 +120,8 @@ class UNet(nn.Module):
         if len(block_out_channels) != len(blocks_per_scale):
             raise ValueError("Must provide same number of `block_out_channels` and `blocks_per_scale`")
 
+        self.in_channels = in_channels
+        self.block_out_channels = block_out_channels
         self.add_residual = add_residual
         
         self.local_embeds = local_embeds
