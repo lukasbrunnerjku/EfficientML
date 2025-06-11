@@ -11,8 +11,8 @@ class KeypointUpsampleBlock(nn.Module):
         self,
         in_channels: int = 128,
         hidden_channels: int = 512,
-        n_keypoints: int = 5,
         upscale_factor: int = 4,
+        n_keypoints: int = 5,
         offset_channels: int = 2,
         aux_channels: int = 1,
     ):
@@ -48,18 +48,34 @@ class KeypointUpsampleBlock(nn.Module):
         return {"heatmaps": heatmaps, "offsets": offsets, "aux": aux}
 
 
-if __name__ == "__main__":
-    model = UNet(3, (64, 128, 256), (2, 2, 3), with_stem=True, add_residual=False)
+def build_model(unet_cfg, head_cfg):
+    model = UNet(**unet_cfg)
     model.conv_out = KeypointUpsampleBlock(
-        model.block_out_channels[0],
+        in_channels=model.block_out_channels[0],
         hidden_channels=4 * model.block_out_channels[0],
         upscale_factor=4,
+        **head_cfg,
     )
     n_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     print(f"UNet with {1e-6 * n_params:.3f} M parameters.")
-    
-    model.eval()
-    model.cuda()
+    return model
+
+
+if __name__ == "__main__":
+    unet_cfg = {
+        "in_channels": 3,
+        "block_out_channels": (64, 128, 256),
+        "blocks_per_scale": (2, 2, 3),
+        "drop_path": 0.2,
+        "with_stem": True,
+        "add_residual": False,
+    }
+    head_cfg = {
+        "n_keypoints": 5,
+        "offset_channels": 2,
+        "aux_channels": 1,
+    }
+    model = build_model(unet_cfg, head_cfg).eval().cuda()
     x = torch.randn(1, 3, 256, 256).cuda()
     
     output = model(x)

@@ -29,7 +29,7 @@ def load_image(file: Path, min_temp: float, max_temp: float) -> Tensor:
     return x
 
 
-class ThermalDataset(ImageToImageBase):
+class AOSDataset(ImageToImageBase):
     
     def load_from_files(self, input_file: Path, output_file: Path, meta_file: Path):
         min_input, max_input, min_output, max_output, env_temp = get_meta(meta_file)
@@ -44,5 +44,5 @@ class ThermalDataset(ImageToImageBase):
         
 
 if __name__ == "__main__":
-    # ds = ThermalDataset()
+    ds = AOSDataset()
     

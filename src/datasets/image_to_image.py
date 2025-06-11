@@ -9,8 +9,8 @@ class ImageToImageBase(Dataset, ABC):
         self,
         input_folder: Path,
         output_folder: Path,
-        file_ext: str = "png",
         meta_folder: Optional[Path] = None,
+        file_ext: str = "png",
         meta_ext: str = "txt",
     ):
         self.input_files = sorted(input_folder.glob(f"*.{file_ext}"))

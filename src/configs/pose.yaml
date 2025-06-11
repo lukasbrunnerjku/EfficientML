@@ -1,0 +1,29 @@
+unet:
+  in_channels: 3
+  block_out_channels: [64, 128, 256]
+  blocks_per_scale: [2, 2, 3]
+  num_refine_blocks: 2
+  drop_path: 0.2
+  with_stem: True
+  add_residual: False
+
+head:
+  n_keypoints: 5
+  offset_channels: 2
+  aux_channels: 1
+
+train:
+  epochs: 50
+  batch_size: 16
+  learning_rate: 0.001
+  log_dir: "./logs"
+  log_every: 50
+  vis_every: 500
+
+data:
+  path: ./dataset/example
+  train: images/train  # train images (relative to 'path')
+  val: images/val  # val images (relative to 'path')
+  kpt_shape: [4, 3]
+  kpt_labels: [TL, TR, BR, BL]
+  
