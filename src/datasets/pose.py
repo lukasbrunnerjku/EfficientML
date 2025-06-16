@@ -56,10 +56,9 @@ class PoseDataset(Dataset):
         """
         xyv = []
         with open(file, "r") as fp:
-            objects = fp.readlines()
-            for object in objects:
-                values = object.split(sep)
-                xyv.append(values)
+            objs = fp.readlines()
+            for obj in objs:
+                xyv.append(obj.split(sep))
                 
         xyv = np.array(xyv).reshape(-1, self.kpt_shape[1])
         return xyv
@@ -67,12 +66,16 @@ class PoseDataset(Dataset):
     def __getitem__(self, idx):
         input_file = self.input_files[idx]
         meta_file = self.meta_files[idx]
+        
         image = self._load_image(input_file)
         xyv = self._load_target(meta_file)
+        
         t = self.transform(image=image, keypoints=xyv[:, :2])
         image = t["image"]
-        xyv[:, :2] = t["keypoints"]
-        xyv[:, 2] = [is_visible(kp, image.shape) for kp in xyv]
+        if len(xyv) > 0:
+            xyv[:, :2] = t["keypoints"]
+            xyv[:, 2] = [is_visible(kp, image.shape) for kp in xyv]
+            
         return {
             "image": image,
             "xyv": xyv,
